@@ -10,6 +10,8 @@ Parameters:
     AllowedValues:
       - Prod
       - Stage
+    Default:
+      Prod
 
 Resources:
   JackInstance:
