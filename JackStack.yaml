@@ -39,6 +39,17 @@ Resources:
             #run the  cfn-init command
             /opt/aws/bin/cfn-init -s ${AWS::StackId} -r JackInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
 
+            #Store the last result of command into the variable: IF cfn-init is SUCCESSFUL, it will be 0, if NOT, it will be equal to that error code.
+            INIT_STATUS=$?
+
+            #Sending back the result using cfn-signal
+            /opt/aws/bin/cfn-signal -e $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
+
+            #exit the script
+            exit $INIT_STATUS
+
+
+
       Tags:
         - Key: Name
           Value: !Sub '${Owner} on ${Deployment} in Region: ${AWS::Region}'
@@ -71,6 +82,13 @@ Resources:
               httpd:
                 enabled: 'true'
                 ensureRunning: 'true'
+
+    SampleWaitCondition:
+      Type: AWS::CloudFormation::WaitCondition
+      CreationPolicy:
+        ResourceSignal:
+          Timeout: PT2M #2 minutes to receive either a success (0) or a failure.
+          Count: 1
 
   AllowSSHICMPHTTTPFromAnywhere:
     Type: AWS::EC2::SecurityGroup
