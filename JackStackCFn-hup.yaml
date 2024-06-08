@@ -49,10 +49,7 @@ Resources:
                 </head>
                 <body>
                   <h1>Hello, World! Welcome to my website!</h1>
-<<<<<<< HEAD
                   <p> I’ve added some content to it ok?</p>
-=======
->>>>>>> 194a32ba6be0e0213b13e85930acfcf1aefbb416
                 </body>
                 </html>
               mode: "000644"
