@@ -10,6 +10,8 @@ Parameters:
     AllowedValues:
       - Prod
       - Stage
+    Default:
+      Prod
 
 Resources:
   JackInstance:
@@ -36,7 +38,7 @@ Resources:
               content: !Sub | #What is happening when the metadata has changed
                 [cfn-auto-reloader-hook]
                 triggers=post.update
-                path=Resources.JackInstance.Metada.AWS::CloudFormation::Init
+                path=Resources.JackInstance.Metadata.AWS::CloudFormation::Init
                 action=/opt/aws/bin/cfn-init --verbose --stack ${AWS::StackName} --resource JackInstance --configsets default --region ${AWS::Region}
                 runas=root
         configure:
@@ -49,7 +51,7 @@ Resources:
                 </head>
                 <body>
                   <h1>Hello, World! Welcome to my website!</h1>
-                  <p> I’ve added some content to it ok?</p>
+                  <p>The quick brown fox jumps over the lazy dog. </p>
                 </body>
                 </html>
               mode: "000644"
