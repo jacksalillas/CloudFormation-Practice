@@ -5,7 +5,7 @@ Parameters:
     AllowedValues:
       - ap-southeast-1a
 
-Resources:
+Resources: #test
   JackInstance:
     Type: AWS::EC2::Instance
     Properties:
