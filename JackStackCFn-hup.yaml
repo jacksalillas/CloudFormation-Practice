@@ -33,13 +33,13 @@ Resources:
                 [main]
                 stack=${AWS::StackId}
                 region=${AWS::Region}
-                interval=1 #every 1 minute
+                interval=1
             "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
-              content: !Sub | #What is happening when the metadata has changed
+              content: !Sub |
                 [cfn-auto-reloader-hook]
                 triggers=post.update
                 path=Resources.JackInstance.Metadata.AWS::CloudFormation::Init
-                action=/opt/aws/bin/cfn-init --verbose --stack ${AWS::StackName} --resource JackInstance --configsets default --region ${AWS::Region}
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource JackInstance --configsets default --region ${AWS::Region}
                 runas=root
         configure:
           files:
@@ -51,16 +51,13 @@ Resources:
                 </head>
                 <body>
                   <h1>Hello, World! Welcome to my website!</h1>
-                  <p>The quick brown fox jumps over the lazy dog.</p>
-                  <p>Yeah right whatever</p>
+                  <p>Hayyyyzzz please naman??? baka naman???</p>
                 </body>
                 </html>
               mode: "000644"
               owner: "root"
               group: "root"
-          commands:
-            hello:
-              command: "echo 'this is the command part, nothing fancy.' && exit 0" #exit (not zero, 𝘪.𝘦. 1) to test for errors
+          #commands:
           services: #launch a list of sysvinit
             sysvinit:
               httpd:
@@ -72,16 +69,6 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - !Ref AllowSSHICMPHTTTPFromAnywhere
-      #OLD User Data
-      #UserData:
-      #   Fn::Base64: |
-        #    #!/bin/bash -xe
-        #   dnf update -y
-          #  dnf install -y httpd
-          # systemctl start httpd
-            #systemctl enable httpd
-            #echo "<h1>Hello World from user data!</h1>" > /var/www/html/index.html
-
       UserData: #Bootstrapping this first so the instance queries itself. Must be inside Properties
         Fn::Base64:
           !Sub |
@@ -93,7 +80,7 @@ Resources:
             #run the  cfn-init command
             /opt/aws/bin/cfn-init --verbose --stack ${AWS::StackName} --resource JackInstance --configsets default --region ${AWS::Region}
 
-            #Start the cfn-hup
+            # Start cfn-hup
             /opt/aws/bin/cfn-hup || error_exit 'Failed to start cfn-hup'
             
             #Store the last result of command into the variable: IF cfn-init is SUCCESSFUL, it will be 0, if NOT, it will be equal to that error code.
