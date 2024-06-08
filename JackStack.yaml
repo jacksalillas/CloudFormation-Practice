@@ -116,6 +116,9 @@ Resources:
           Value: Allow SSH/ICMP/HTTP from anywhere.
 
 Outputs:
+  WebsiteURL:
+    Description: URL of the website
+    Value: !Sub "http://${JackInstance.PublicDnsName}/"
   AZ:
     Description: The AZ this Instance resides.
     Value: !GetAtt JackInstance.AvailabilityZone
