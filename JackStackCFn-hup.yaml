@@ -87,7 +87,7 @@ Resources:
             dnf update -y aws-cfn-bootstrap
 
             #run the  cfn-init command
-            /opt/aws/bin/cfn-init --verbose --stack ${AWS::StackName} --resource JackInstance configsets default --region ${AWS::Region}
+            /opt/aws/bin/cfn-init --verbose --stack ${AWS::StackName} --resource JackInstance --configsets default --region ${AWS::Region}
 
             #Start the cfn-hup
             /opt/aws/bin/cfn-hup || error_exit 'Failed to start cfn-hup'
