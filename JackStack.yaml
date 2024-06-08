@@ -42,13 +42,13 @@ Resources:
             /opt/aws/bin/cfn-init --stack ${AWS::StackName} --resource JackInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
 
             #Store the last result of command into the variable: IF cfn-init is SUCCESSFUL, it will be 0, if NOT, it will be equal to that error code.
-            INIT_STATUS=$? #The $? special variable holds the value of the previous line's exit code; A behaviour of bash.
+            INIT_STATUS=$?
 
             #Sending back the result using cfn-signal to cloudformation
-            /opt/aws/bin/cfn-signal --exit-code $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
 
             #exit the script
-            exit $INIT_STATUS #it ensures that the overall script exits with the correct status code
+            exit $INIT_STATUS
 
       Tags:
         - Key: Name
@@ -56,7 +56,7 @@ Resources:
         - Key: Owner
           Value: !Ref Owner
 
-    Metadata: #Must be in here
+    Metadata: #Must be in here.
       AWS::CloudFormation::Init: #EC2 will query cfn service to get the init data
         config:
           packages: #used to download and install pre-packaged apps and components
@@ -76,7 +76,7 @@ Resources:
               mode: '000644'
           commands:
             hello:
-              command: "echo 'boom' && exit 1" #exit (not zero, 𝘪.𝘦. 1) to test for errors
+              command: "echo 'boom shakalalalalalalal' && exit 0" #exit (not zero, 𝘪.𝘦. 1) to test for errors
           services: #launch a list of sysvinit
             sysvinit:
               httpd:
