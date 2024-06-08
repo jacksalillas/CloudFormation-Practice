@@ -2,6 +2,8 @@ Parameters:
   Owner:
     Description: The owner of this Instance.
     Type: String
+    Default:
+      Jack Salillas
   Deployment:
     Description: The environment to which the Instance will be deployed to.
     Type: String
