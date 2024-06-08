@@ -45,10 +45,10 @@ Resources:
             INIT_STATUS=$? #The $? special variable holds the value of the previous line's exit code; A behaviour of bash.
 
             #Sending back the result using cfn-signal to cloudformation
-            /opt/aws/bin/cfn-signal -e $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal --exit-code $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
 
             #exit the script
-            exit $INIT_STATUS
+            exit $INIT_STATUS #it ensures that the overall script exits with the correct status code
 
       Tags:
         - Key: Name
