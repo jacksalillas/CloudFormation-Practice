@@ -41,7 +41,7 @@ Resources:
                 runas=root
         configure:
           files:
-            "/var/www/html/index.hmtl":
+            "/var/www/html/index.html":
               content: |
                 <html>
                 <head>
