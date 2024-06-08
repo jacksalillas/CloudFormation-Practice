@@ -1,0 +1,25 @@
+Resources:
+  MyKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: DemoKeyPair
+      KeyType: rsa
+
+  JackNestStack:
+    Type: AWS;;CloudFormation::Stack #this is the type for Nested Stacks
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/cloudformation-templates-us-east-1/LAMP_Single_Instance.template
+      Parameters: #we will be sending these values to our template
+        KeyName: !Ref MyKeyPair
+        DBName: "mydb"
+        DBUser: "user"
+        DBPassword: "pass"
+        DBRootPassword: "passroot"
+        InstanceType: t2.micro
+        SSHLocation: "0.0.0.0/0"
+
+Outputs:
+  StackRef:
+    Value: !Ref JackNestStack
+  OutputFromNestedStack:
+    Value: !GetAt JackNestStack.Outputs.WebsiteURL

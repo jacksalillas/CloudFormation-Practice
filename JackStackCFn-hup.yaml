@@ -56,7 +56,7 @@ Resources:
               group: "root"
           commands:
             hello:
-              command: "echo 'this is the command part, nothing fancy." #exit (not zero, 𝘪.𝘦. 1) to test for errors
+              command: "echo 'this is the command part, nothing fancy.' && exit 0" #exit (not zero, 𝘪.𝘦. 1) to test for errors
           services: #launch a list of sysvinit
             sysvinit:
               httpd:
