@@ -51,7 +51,8 @@ Resources:
                 </head>
                 <body>
                   <h1>Hello, World! Welcome to my website!</h1>
-                  <p>The quick brown fox jumps over the lazy dog. </p>
+                  <p>The quick brown fox jumps over the lazy dog.</p>
+                  <p>Yeah right whatever</p>
                 </body>
                 </html>
               mode: "000644"
