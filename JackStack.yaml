@@ -83,12 +83,12 @@ Resources:
                 enabled: 'true'
                 ensureRunning: 'true'
 
-    SampleWaitCondition:
-      Type: AWS::CloudFormation::WaitCondition
-      CreationPolicy:
-        ResourceSignal:
-          Timeout: PT2M #2 minutes to receive either a success (0) or a failure.
-          Count: 1
+  SampleWaitCondition:
+    Type: AWS::CloudFormation::WaitCondition
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT2M #2 minutes to receive either a success (0) or a failure.
+        Count: 1
 
   AllowSSHICMPHTTTPFromAnywhere:
     Type: AWS::EC2::SecurityGroup
