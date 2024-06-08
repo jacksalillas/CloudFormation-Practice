@@ -20,15 +20,15 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - !Ref AllowSSHICMPHTTTPFromAnywhere
-    #OLD User Data
-    #UserData:
-     #   Fn::Base64: |
-      #    #!/bin/bash -xe
-       #   dnf update -y
-        #  dnf install -y httpd
-         # systemctl start httpd
-          #systemctl enable httpd
-          #echo "<h1>Hello World from user data!</h1>" > /var/www/html/index.html
+      #OLD User Data
+      #UserData:
+      #   Fn::Base64: |
+        #    #!/bin/bash -xe
+        #   dnf update -y
+          #  dnf install -y httpd
+          # systemctl start httpd
+            #systemctl enable httpd
+            #echo "<h1>Hello World from user data!</h1>" > /var/www/html/index.html
 
       UserData: #Bootstrapping this first so the instance queries itself. Must be inside Properties
         Fn::Base64:
@@ -45,17 +45,10 @@ Resources:
             INIT_STATUS=$? #The $? special variable holds the value of the previous line's exit code; A behaviour of bash.
 
             #Sending back the result using cfn-signal to cloudformation
-<<<<<<< HEAD
             /opt/aws/bin/cfn-signal --exit-code $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
 
             #exit the script
             exit $INIT_STATUS #it ensures that the overall script exits with the correct status code
-=======
-            /opt/aws/bin/cfn-signal -e $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
-
-            #exit the script
-            exit $INIT_STATUS
->>>>>>> 194a32ba6be0e0213b13e85930acfcf1aefbb416
 
       Tags:
         - Key: Name
