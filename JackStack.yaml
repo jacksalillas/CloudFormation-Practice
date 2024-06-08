@@ -37,7 +37,7 @@ Resources:
             dnf update -y aws-cfn-bootstrap
 
             #run the  cfn-init command
-            /opt/aws/bin/cfn-init -s ${AWS::StackId} -r JackInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
+            /opt/aws/bin/cfn-init -stack ${AWS::StackId} -r JackInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
 
             #Store the last result of command into the variable: IF cfn-init is SUCCESSFUL, it will be 0, if NOT, it will be equal to that error code.
             INIT_STATUS=$?
