@@ -20,6 +20,7 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - !Ref AllowSSHICMPHTTTPFromAnywhere
+        
       #OLD User Data
       #UserData:
       #   Fn::Base64: |
