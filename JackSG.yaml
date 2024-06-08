@@ -1,0 +1,24 @@
+Resources:
+  AllowSSHFromAnywhere:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and ICMP from anywhere.
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0 #from public
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: icmp
+          FromPort: -1 #for ICMP: 8 is the ICMP type for Echo Request
+          ToPort: -1 #for ICMP: -1 means to allow all codes of Echo Request
+      Tags:
+        - Key: Name
+          Value: Allow SSH and ICMP from anywhere.
+
+Outputs:
+  SecurityGroup:
+    Description: The SG created.
+    Value: !Ref AllowSSHFromAnywhere
+    Export:
+      Name: !Sub ${AWS::StackName}-JackSG

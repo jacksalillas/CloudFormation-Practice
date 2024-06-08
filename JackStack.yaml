@@ -1,0 +1,102 @@
+Parameters:
+  Owner:
+    Description: The owner of this Instance.
+    Type: String
+  Deployment:
+    Description: The environment to which the Instance will be deployed to.
+    Type: String
+    AllowedValues:
+      - Prod
+      - Stage
+
+Resources:
+  JackInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: ap-southeast-1a
+      ImageId: ami-0b287aaaab87c114d
+      InstanceType: t2.micro
+      SecurityGroups:
+        - !Ref AllowSSHICMPHTTTPFromAnywhere
+    #OLD User Data
+    #UserData:
+     #   Fn::Base64: |
+      #    #!/bin/bash -xe
+       #   dnf update -y
+        #  dnf install -y httpd
+         # systemctl start httpd
+          #systemctl enable httpd
+          #echo "<h1>Hello World from user data!</h1>" > /var/www/html/index.html
+
+      UserData: #Bootstrapping this first so the instance queries itself. Must be inside Properties
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+
+            #Get the latest CFn package
+            dnf update -y aws-cfn-bootstrap
+
+            #run the  cfn-init command
+            /opt/aws/bin/cfn-init -s ${AWS::StackId} -r JackInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
+
+      Tags:
+        - Key: Name
+          Value: !Sub '${Owner} on ${Deployment} in Region: ${AWS::Region}'
+        - Key: Owner
+          Value: !Ref Owner
+
+    Metadata: #Must be in here
+      AWS::CloudFormation::Init: #EC2 will query cfn service to get the init data
+        config:
+          packages: #used to download and install pre-packaged apps and components
+            yum:
+              httpd: []
+          #groups: #define user groups
+          #users: #define users, and which group they belong to
+          #sources: #download files and archives and place them on the EC2 instance
+          files: #create files on the EC2 instance, using inline or can be pulled from a URL
+            "/var/www/html/index.html":
+              content: |
+                <h1>Hello World from EC2 instance!</h1>
+                <p>This was created using cfn-init</p>
+              mode: '000644'
+            "/opt/jackdir/jack.txt":
+              content: This is Jack's text file.
+              mode: '000644'
+          commands:
+            hello:
+              command: "echo 'hello world'"
+          services: #launch a list of sysvinit
+            sysvinit:
+              httpd:
+                enabled: 'true'
+                ensureRunning: 'true'
+
+  AllowSSHICMPHTTTPFromAnywhere:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: sgAllowSSHICMPHTTTPFromAnywhere
+      GroupDescription: Allow SSH/ICMP/HTTP from anywhere.
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0 #from public
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: icmp
+          FromPort: -1 #for ICMP: 8 is the ICMP type for Echo Request
+          ToPort: -1 #for ICMP: -1 means to allow all codes of Echo Request
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+      Tags:
+        - Key: Name
+          Value: Allow SSH/ICMP/HTTP from anywhere.
+
+Outputs:
+  AZ:
+    Description: The AZ this Instance resides.
+    Value: !GetAtt JackInstance.AvailabilityZone
+    Export:
+      Name: !Sub ${AWS::StackName}-VPCID
