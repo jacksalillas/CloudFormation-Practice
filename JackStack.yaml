@@ -2,6 +2,8 @@ Parameters:
   Owner:
     Description: The owner of this Instance.
     Type: String
+    Default:
+      Jack Salillas
   Deployment:
     Description: The environment to which the Instance will be deployed to.
     Type: String
@@ -12,7 +14,7 @@ Parameters:
 Resources:
   JackInstance:
     Type: AWS::EC2::Instance
-    Properties:å
+    Properties:
       AvailabilityZone: ap-southeast-1a
       ImageId: ami-0b287aaaab87c114d
       InstanceType: t2.micro
@@ -37,18 +39,16 @@ Resources:
             dnf update -y aws-cfn-bootstrap
 
             #run the  cfn-init command
-            /opt/aws/bin/cfn-init --stack ${AWS::StackId} --resource JackInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
+            /opt/aws/bin/cfn-init --stack ${AWS::StackName} --resource JackInstance --region ${AWS::Region} || error_exit 'Failed to run cfn-init'
 
             #Store the last result of command into the variable: IF cfn-init is SUCCESSFUL, it will be 0, if NOT, it will be equal to that error code.
             INIT_STATUS=$?
 
-            #Sending back the result using cfn-signal
+            #Sending back the result using cfn-signal to cloudformation
             /opt/aws/bin/cfn-signal -e $INIT_STATUS --stack ${AWS::StackName} --resource SampleWaitCondition --region ${AWS::Region}
 
             #exit the script
             exit $INIT_STATUS
-
-
 
       Tags:
         - Key: Name
@@ -76,14 +76,14 @@ Resources:
               mode: '000644'
           commands:
             hello:
-              command: "echo 'boom' & exit 1"
+              command: "echo 'boom' && exit 1" #exit (not zero, 𝘪.𝘦. 1) to test for errors
           services: #launch a list of sysvinit
             sysvinit:
               httpd:
                 enabled: 'true'
                 ensureRunning: 'true'
 
-  SampleWaitCondition:
+  SampleWaitCondition: #This is a resource
     Type: AWS::CloudFormation::WaitCondition
     CreationPolicy:
       ResourceSignal:
