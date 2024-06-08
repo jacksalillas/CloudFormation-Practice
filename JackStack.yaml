@@ -76,7 +76,7 @@ Resources:
               mode: '000644'
           commands:
             hello:
-              command: "echo 'hello world'"
+              command: "echo 'boom' & exit 1"
           services: #launch a list of sysvinit
             sysvinit:
               httpd:
