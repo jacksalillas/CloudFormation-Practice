@@ -1,0 +1,133 @@
+Parameters:
+  Owner:
+    Description: The owner of this Instance.
+    Type: String
+    Default:
+      Jack Salillas
+  Deployment:
+    Description: The environment to which the Instance will be deployed to.
+    Type: String
+    AllowedValues:
+      - Prod
+      - Stage
+    Default:
+      Prod
+
+Resources:
+  JackInstance:
+    Type: AWS::EC2::Instance
+    Metadata: #Must be in here.
+      AWS::CloudFormation::Init: #EC2 will query cfn service to get the init data
+        configSets:
+          default: ["install", "configure"]
+        install:
+          packages: #used to download and install pre-packaged apps and components
+            yum:
+              httpd: []
+          #groups: #define user groups
+          #users: #define users, and which group they belong to.
+          #sources: #download files and archives and place them on the EC2 instance
+          files: #create files on the EC2 instance, using inline or can be pulled from a URL
+            "/etc/cfn/cfn-hup.conf":
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+                interval=1
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.JackInstance.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource JackInstance --configsets default --region ${AWS::Region}
+                runas=root
+        configure:
+          files:
+            "/var/www/html/index.html":
+              content: |
+                <html>
+                <head>
+                  <title>Hello World</title>
+                </head>
+                <body>
+                  <h1>Hello, World! Welcome to my website!</h1>
+                  <p>Hayyyyzzz please naman??? baka naman???</p>
+                </body>
+                </html>
+              mode: "000644"
+              owner: "root"
+              group: "root"
+          #commands:
+          services: #launch a list of sysvinit
+            sysvinit:
+              httpd:
+                enabled: 'true'
+                ensureRunning: 'true'
+    Properties:
+      AvailabilityZone: ap-southeast-1a
+      ImageId: ami-0b287aaaab87c114d
+      InstanceType: t2.micro
+      SecurityGroups:
+        - !Ref AllowSSHICMPHTTTPFromAnywhere
+      UserData: #Bootstrapping this first so the instance queries itself. Must be inside Properties
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+
+            #Get the latest CFn package
+            dnf update -y aws-cfn-bootstrap
+
+            #run the  cfn-init command
+            /opt/aws/bin/cfn-init --verbose --stack ${AWS::StackName} --resource JackInstance --configsets default --region ${AWS::Region}
+
+            # Start cfn-hup
+            /opt/aws/bin/cfn-hup || error_exit 'Failed to start cfn-hup'
+            
+            #Store the last result of command into the variable: IF cfn-init is SUCCESSFUL, it will be 0, if NOT, it will be equal to that error code.
+            INIT_STATUS=$? #The $? special variable holds the value of the previous line's exit code; A behaviour of bash.
+
+            #Sending back the result using cfn-signal to cloudformation
+            /opt/aws/bin/cfn-signal --exit-code $INIT_STATUS --stack ${AWS::StackName} --resource JackInstance --region ${AWS::Region}
+
+            #exit the script
+            #exit $INIT_STATUS #it ensures that the overall script exits with the correct status code
+
+      Tags:
+        - Key: Name
+          Value: !Sub '${Owner} on ${Deployment} in Region: ${AWS::Region}'
+        - Key: Owner
+          Value: !Ref Owner
+        - Key: MyTags
+          Value: Whatever hehehehehe
+
+  AllowSSHICMPHTTTPFromAnywhere:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: sgAllowSSHICMPHTTTPFromAnywhere
+      GroupDescription: Allow SSH/ICMP/HTTP from anywhere.
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0 #from public
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: icmp
+          FromPort: -1 #for ICMP: 8 is the ICMP type for Echo Request
+          ToPort: -1 #for ICMP: -1 means to allow all codes of Echo Request
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+      Tags:
+        - Key: Name
+          Value: Allow SSH/ICMP/HTTP from anywhere.
+
+Outputs:
+  WebsiteURL:
+    Description: URL of the website
+    Value: !Sub "http://${JackInstance.PublicDnsName}/"
+  AZ:
+    Description: The AZ this Instance resides.
+    Value: !GetAtt JackInstance.AvailabilityZone
+    Export:
+      Name: !Sub ${AWS::StackName}-VPCID
