@@ -98,7 +98,7 @@ Resources:
         - Key: Owner
           Value: !Ref Owner
         - Key: MyTags
-          Value: Whatever
+          Value: this is my commit ok?
 
   AllowSSHICMPHTTTPFromAnywhere:
     Type: AWS::EC2::SecurityGroup
