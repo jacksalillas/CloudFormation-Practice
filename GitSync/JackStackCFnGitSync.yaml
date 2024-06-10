@@ -133,4 +133,4 @@ Outputs:
       Name: !Sub ${AWS::StackName}-VPCID
   GitSyncTest:
     Description: Just testing the new Git Sync feature!
-    Value: !Sub ${AWS::StackName} is the Git Sync Stack by Jack.
+    Value: !Sub ${AWS::StackName} is the Git Sync Stack by Jack...
