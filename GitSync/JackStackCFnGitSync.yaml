@@ -98,7 +98,7 @@ Resources:
         - Key: Owner
           Value: !Ref Owner
         - Key: MyTags
-          Value: Whatever hehehehehe
+          Value: Whatever hehehehehehe
 
   AllowSSHICMPHTTTPFromAnywhere:
     Type: AWS::EC2::SecurityGroup
