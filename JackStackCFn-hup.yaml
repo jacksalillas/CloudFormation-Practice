@@ -97,6 +97,8 @@ Resources:
           Value: !Sub '${Owner} on ${Deployment} in Region: ${AWS::Region}'
         - Key: Owner
           Value: !Ref Owner
+        - Key: MyTag
+          Value: Whatever hehehehehe
 
   AllowSSHICMPHTTTPFromAnywhere:
     Type: AWS::EC2::SecurityGroup
