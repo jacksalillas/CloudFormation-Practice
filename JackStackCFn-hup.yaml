@@ -98,7 +98,7 @@ Resources:
         - Key: Owner
           Value: !Ref Owner
         - Key: MyTag
-          Value: For Commit Changes purposes only
+          Value: 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
 
   AllowSSHICMPHTTTPFromAnywhere:
     Type: AWS::EC2::SecurityGroup
