@@ -25,7 +25,7 @@ Resources:
             yum:
               httpd: []
           #groups: #define user groups
-          #users: #define users, and which group they belong to
+          #users: #define users, and which group they belong to.
           #sources: #download files and archives and place them on the EC2 instance
           files: #create files on the EC2 instance, using inline or can be pulled from a URL
             "/etc/cfn/cfn-hup.conf":
